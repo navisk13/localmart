@@ -12,7 +12,7 @@
 
 <div class="container">
     <div class="row" style="margin-top: 6%">
-         <button class="btn btn-info pull-right">
+         <button class="btn btn-info pull-right", onclick="window.location.href='{% url 'cart:cart_detail' %}'">
             {% with totail_items=cart|length %}
                 {% if cart|length > 0 %}
                     My Shopping Order:

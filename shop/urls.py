@@ -1,6 +1,8 @@
 from django.conf.urls import url
 from . import views
 from django.contrib.auth import views as auth_views
+# from shop.views import ProductCreateView
+from django.views.generic import TemplateView
 
 app_name = 'shop'
 
@@ -13,7 +15,18 @@ urlpatterns = [
     url(r'^resetpassword/confirm/$', auth_views.password_reset_confirm, name="password_reset_confirm"),
     url(r'^resetpassword/complete/$', auth_views.password_reset_complete, name="password_reset_complete"),
     url(r'^resetpassword/done/$', auth_views.password_reset_done, name="password_reset_done"),
-    # url(r'^signup/$', auth_views., name="signup"),
+    # url(r'^signup/$', views.UserSignUpView.as_view(), name='signup'),
+    # url(
+    #     r'^signup/success/$',
+    #     TemplateView.as_view(template_name='registration/signup_success.html'),
+    #     name="signup_success"
+    # ),
+    # url(
+    #     r'^signup/already-logged-in/$',
+    #     TemplateView.as_view(template_name='registration/already_logged_in.html'),
+    #     name="already_logged_in"
+    # ),
+    # url(r'^create/$', ProductCreateView.as_view(), name='product_create'),
     url(r'^$', views.product_list, name='product_list'),
     url(r'^(?P<category_slug>[-\w]+)/$', views.product_list, name='product_list_by_category'),
     url(r'^(?P<id>\d+)/(?P<slug>[-\w]+)/$', views.product_detail, name='product_detail'),
