@@ -12,6 +12,7 @@
 
 <div class="container">
     <div class="row" style="margin-top: 6%">
+        {% if request.user.is_authenticated %}
          <button class="btn btn-info pull-right", onclick="window.location.href='{% url 'cart:cart_detail' %}'">
             {% with totail_items=cart|length %}
                 {% if cart|length > 0 %}
@@ -23,6 +24,7 @@
                     Your cart is empty.
                 {% endif %}
             {% endwith %}
+        {% endif %}
          </button>
     </div>
 </div>

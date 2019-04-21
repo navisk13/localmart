@@ -7,16 +7,8 @@
 {% block content %}
     <div class="container">
         <div class="row" style="margin-top: 6%">
-            <div class="col-md-8">
-                <h4 class="page-header">Checkout</h4>
-                <form action="." method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}<br>
-                    <input type="submit" class="btn btn-primary" value="Submit order">
-                </form>
-            </div>
-            <div class="col-md-4">
-                <div class="page-header">
+            <div class="col-md-4" style="text-align: center; margin-left: 365px">
+                <div class="page-header" style="font-size: large">
                     Your Order
                 </div>
                 <ul class="list-group">
@@ -26,11 +18,15 @@
                         <span>Rs. {{ item.total_price }}</span>
                         </li>
                     {% endfor %}
-
                 <li class="list-group-item active">Total Cost: Rs. {{ cart.get_total_price }}</li>
                 </ul>
-
+                <form action="." method="post">
+                    {% csrf_token %}
+{#                    {{ form.as_p }}<br>#}
+                    <input type="submit" class="btn btn-primary" value="Submit order">
+                </form>
             </div>
+
         </div>
     </div>
 {% endblock %}

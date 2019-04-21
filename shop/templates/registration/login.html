@@ -1,15 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-      <h2>Login</h2>
-    <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
-</head>
-<body>
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}
+    Login
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row" style="margin-top: 6%">
+            <div class="col-md-4" style="text-align: center; margin-left: 365px">
+                <div class="page-header" style="font-size: large">
+                    Login
+                </div>
+                <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Login</button>
+                </form>
+                 <div class="form-group" style="text-align: center;">
+                     <a class="text-muted" href="{% url 'password_reset' %}"><small>Forgot password?</small></a>
+                     <br>
+                     <a class="text-muted" href="#"><small>Don't have an account?</small></a>
+                 </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
-</body>
-</html>
+
