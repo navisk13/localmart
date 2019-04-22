@@ -41,16 +41,35 @@ def product_detail(request, id, slug):
     return render(request, 'shop/product/detail.html', context)
 
 
-class UserSignUpView(CreateView):
-    form_class = SignUpForm
-    template_name = 'registration/signup.html'
-    success_url = reverse_lazy('profile')
+# class UserSignUpView(CreateView):
+#     form_class = SignUpForm
+#     template_name = 'registration/signup.html'
+#     success_url = reverse_lazy('login')
+#
+#     def get(self, request, *args, **kwargs):
+#         if request.user.is_authenticated:
+#             return redirect('home')
+#         return super(UserSignUpView, self).get(request, *args, **kwargs)
+#     def post(self, request, *args, **kwargs):
+#         username = self.request.POST['username']
+#         password = self.request.POST['password1']
+#         user = User.objects.only(username=username)
+#         login(self.request, user)
+#         return super(UserSignUpView, self).post(request,*args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect('already_logged_in')
-        return super(UserSignUpView, self).get(request, *args, **kwargs)
-
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('/')
+    else:
+        form = SignUpForm()
+    return render(request, 'registration/signup.html', {'form': form})
 
 class UserUpdateView(UpdateView):
     model = Profile

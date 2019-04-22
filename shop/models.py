@@ -47,7 +47,7 @@ class Product(models.Model):
 
 
 class Profile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.TextField(blank=False)
     phone = models.IntegerField(blank=True, null=True)
 

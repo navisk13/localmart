@@ -2,7 +2,7 @@ from django.conf.urls import url
 from . import views
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
-from shop.views import UserSignUpView, ProfileDetailView, UserUpdateView
+from shop.views import  ProfileDetailView, UserUpdateView, signup
 from django.contrib.auth.decorators import login_required
 
 app_name = 'shop'
@@ -16,10 +16,10 @@ urlpatterns = [
     url(r'^resetpassword/confirm/$', auth_views.password_reset_confirm, name="password_reset_confirm"),
     url(r'^resetpassword/complete/$', auth_views.password_reset_complete, name="password_reset_complete"),
     url(r'^resetpassword/done/$', auth_views.password_reset_done, name="password_reset_done"),
+    url(r'^signup/$',views.signup, name="signup"),
     url(r'^$', views.product_list, name='product_list'),
     url(r'^(?P<category_slug>[-\w]+)/$', views.product_list, name='product_list_by_category'),
     url(r'^(?P<id>\d+)/(?P<slug>[-\w]+)/$', views.product_detail, name='product_detail'),
-    url(r'^signup/$', UserSignUpView.as_view(), name="signup"),
     url(r'^(?P<pk>[0-9]+)/$', ProfileDetailView.as_view(), name="profile"),
     url(r'^(?P<pk>[0-9]+)/update/$', login_required(UserUpdateView.as_view()), name="update_profile"),
     url(
