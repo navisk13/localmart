@@ -3,27 +3,16 @@ from .models import Category, Product
 from cart.forms import CartAddProductForm
 # from django.contrib.auth import views as auth_views
 from django.shortcuts import redirect, render
-# from django.urls import reverse_lazy
-# from django.views.generic import CreateView, UpdateView, DetailView, ListView, View
-# from shop.models import UserInfo
-# from shop.forms import UserSignUpForm
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView, DetailView, ListView, View
+from shop.models import Profile
+from shop.forms import SignUpForm
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from django.db import transaction
+from django.contrib.auth.models import User
 
-# from shop.forms import SignUpForm,ProfileForm
-
-
-
-# class UserSignUpView(CreateView):
-#     form_class = UserSignUpForm
-#     template_name = 'registration/signup.html'
-#     success_url = reverse_lazy('signup_success')
-#
-#     def get(self, request, *args, **kwargs):
-#         if request.user.is_authenticated:
-#             return redirect('already_logged_in')
-#         return super(UserSignUpView, self).get(request, *args, **kwargs)
+from shop.forms import SignUpForm,ProfileForm
 
 
 def product_list(request, category_slug=None):
@@ -52,40 +41,61 @@ def product_detail(request, id, slug):
     return render(request, 'shop/product/detail.html', context)
 
 
-# def login(request,  *args, **kwargs):  # view to handle remember me and login
-#     if request.method == 'POST':
-#         if not request.POST.get('remember_me'):
-#             request.session.set_expiry(0)
-#         else:
-#             request.session.set_expiry(1000)
-#     if request.method == 'GET' and request.user.is_authenticated:
-#         return redirect('already_logged_in')
-#     return auth_views.login(request, *args, **kwargs)
+class UserSignUpView(CreateView):
+    form_class = SignUpForm
+    template_name = 'registration/signup.html'
+    success_url = reverse_lazy('profile')
 
-# class ProductCreateView(CreateView):
-#     model = Product
-#     fields = ['category', 'name', 'image', 'description', 'price', 'available', 'stock']
-#
-#     def form_valid(self, form):
-#         form.instance.created_by = self.request.user
-#         response = super(ProductCreateView, self).form_valid(form)
-#         return response
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('already_logged_in')
+        return super(UserSignUpView, self).get(request, *args, **kwargs)
 
-# @transaction.atomic
-# def create_user_view(request):
-#     if request.method == 'POST':
-#         user_form = SignUpForm(request.POST)
-#         profile_form = ProfileForm(request.POST)
-#         if user_form.is_valid() and profile_form.is_valid():
-#             user = user_form.save()
-#             user.refresh_from_db()  # This will load the Profile created by the Signal
-#             profile_form = ProfileForm(request.POST, instance=user.profile)  # Reload the profile form with the profile instance
-#             profile_form.full_clean()  # Manually clean the form this time. It is implicitly called by "is_valid()" method
-#             profile_form.save()  # Gracefully save the form
-#     else:
-#         user_form = SignUpForm()
-#         profile_form = ProfileForm()
-#     return render(request, 'shop/signup.html', {
-#         'user_form': user_form,
-#         'profile_form': profile_form
-# })
+
+class UserUpdateView(UpdateView):
+    model = Profile
+    form_class = ProfileForm
+    template_name = 'registration/signup.html'
+
+    def form_valid(self, form):
+        response = super(UserUpdateView, self).form_valid(form)
+        if form.is_valid():
+            user = form.instance.user
+            user.first_name = form.cleaned_data['first_name']
+            user.last_name = form.cleaned_data['last_name']
+            user.email = form.cleaned_data['email']
+            user.save()
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super(UserUpdateView, self).get_context_data(**kwargs)
+        user = context['form'].instance.user
+        context['form'].fields['first_name'].initial = user.first_name
+        context['form'].fields['last_name'].initial = user.last_name
+        context['form'].fields['email'].initial = user.email
+        context['heading'] = 'Update profile'
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if request.user != self.get_object().user:
+            return redirect('permission_denied')
+        return super(UserUpdateView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if request.user != self.get_object().user:
+            return redirect('permission_denied')
+        return super(UserUpdateView, self).post(request, *args, **kwargs)
+
+
+class ProfileDetailView(DetailView):
+    model = User
+    template_name = 'registration/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileDetailView, self).get_context_data(**kwargs)
+        try:
+            context['user_info'] = Profile.objects.get(user=self.get_object())
+        except User.DoesNotExist:
+            context['error'] = 'No data found for this user!'
+        return context
+
