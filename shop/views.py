@@ -61,15 +61,21 @@ def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
+            user = form.save()
+            user.refresh_from_db()  # load the profile instance created by the signal
+            user.profile.address = form.cleaned_data.get('address')
+            user.profile.phone = form.cleaned_data.get('phone')
+            user.save()
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
+            user = authenticate(username=user.username, password=raw_password)
             login(request, user)
             return redirect('/')
     else:
+        if request.user.is_authenticated:
+            return redirect('/')
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
+
 
 class UserUpdateView(UpdateView):
     model = Profile
@@ -106,15 +112,22 @@ class UserUpdateView(UpdateView):
         return super(UserUpdateView, self).post(request, *args, **kwargs)
 
 
-class ProfileDetailView(DetailView):
-    model = User
-    template_name = 'registration/profile.html'
+# class ProfileDetailView(DetailView):
+#     model = User
+#     template_name = 'registration/profile.html'
+#
+#     def get_context_data(self, request, **kwargs):
+#         context = super(ProfileDetailView, self).get_context_data(**kwargs)
+#         try:
+#             context['user_info'] = Profile.objects.get(user=request.user)
+#         except User.DoesNotExist:
+#             context['error'] = 'No data found for this user!'
+#         return context
 
-    def get_context_data(self, **kwargs):
-        context = super(ProfileDetailView, self).get_context_data(**kwargs)
-        try:
-            context['user_info'] = Profile.objects.get(user=self.get_object())
-        except User.DoesNotExist:
-            context['error'] = 'No data found for this user!'
-        return context
-
+def ProfileDetailView(request):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user=request.user)
+        context = {'profile':profile}
+        return render(request, 'registration/profile.html', context)
+    else:
+        return redirect('login')
