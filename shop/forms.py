@@ -7,13 +7,13 @@ from shop.models import Profile
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
     last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
-    email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
-    address = forms.CharField(max_length=254, help_text='Enter address')
-    phone = forms.CharField(max_length=10, help_text='enter phone no')
+    email = forms.EmailField(max_length=254, help_text='Required. Input a valid email address.')
+    address = forms.CharField(max_length=254, help_text='Enter your address')
+    phone = forms.CharField(max_length=10, help_text='Enter Phone No')
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email','address','phone','password1', 'password2')
+        fields = ('username', 'first_name', 'last_name', 'email', 'address', 'phone', 'password1', 'password2')
 
 
 class ProfileForm(UserCreationForm):

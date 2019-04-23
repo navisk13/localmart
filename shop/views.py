@@ -41,22 +41,6 @@ def product_detail(request, id, slug):
     return render(request, 'shop/product/detail.html', context)
 
 
-# class UserSignUpView(CreateView):
-#     form_class = SignUpForm
-#     template_name = 'registration/signup.html'
-#     success_url = reverse_lazy('login')
-#
-#     def get(self, request, *args, **kwargs):
-#         if request.user.is_authenticated:
-#             return redirect('home')
-#         return super(UserSignUpView, self).get(request, *args, **kwargs)
-#     def post(self, request, *args, **kwargs):
-#         username = self.request.POST['username']
-#         password = self.request.POST['password1']
-#         user = User.objects.only(username=username)
-#         login(self.request, user)
-#         return super(UserSignUpView, self).post(request,*args, **kwargs)
-
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -77,57 +61,12 @@ def signup(request):
     return render(request, 'registration/signup.html', {'form': form})
 
 
-class UserUpdateView(UpdateView):
-    model = Profile
-    form_class = ProfileForm
-    template_name = 'registration/signup.html'
-
-    def form_valid(self, form):
-        response = super(UserUpdateView, self).form_valid(form)
-        if form.is_valid():
-            user = form.instance.user
-            user.first_name = form.cleaned_data['first_name']
-            user.last_name = form.cleaned_data['last_name']
-            user.email = form.cleaned_data['email']
-            user.save()
-        return response
-
-    def get_context_data(self, **kwargs):
-        context = super(UserUpdateView, self).get_context_data(**kwargs)
-        user = context['form'].instance.user
-        context['form'].fields['first_name'].initial = user.first_name
-        context['form'].fields['last_name'].initial = user.last_name
-        context['form'].fields['email'].initial = user.email
-        context['heading'] = 'Update profile'
-        return context
-
-    def get(self, request, *args, **kwargs):
-        if request.user != self.get_object().user:
-            return redirect('permission_denied')
-        return super(UserUpdateView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        if request.user != self.get_object().user:
-            return redirect('permission_denied')
-        return super(UserUpdateView, self).post(request, *args, **kwargs)
-
-
-# class ProfileDetailView(DetailView):
-#     model = User
-#     template_name = 'registration/profile.html'
-#
-#     def get_context_data(self, request, **kwargs):
-#         context = super(ProfileDetailView, self).get_context_data(**kwargs)
-#         try:
-#             context['user_info'] = Profile.objects.get(user=request.user)
-#         except User.DoesNotExist:
-#             context['error'] = 'No data found for this user!'
-#         return context
-
-def ProfileDetailView(request):
+def profiledetailview(request):
     if request.user.is_authenticated:
         profile = Profile.objects.get(user=request.user)
-        context = {'profile':profile}
+        context = {'profile': profile}
         return render(request, 'registration/profile.html', context)
     else:
         return redirect('login')
+
+
