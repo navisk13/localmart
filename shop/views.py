@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.shortcuts import render, get_object_or_404
 from .models import Category, Product
 from cart.forms import CartAddProductForm
@@ -11,8 +12,10 @@ from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from django.db import transaction
 from django.contrib.auth.models import User
+from django.shortcuts import HttpResponseRedirect, reverse
+from django.views.generic import TemplateView
 
-from shop.forms import SignUpForm,ProfileForm
+from shop.forms import SignUpForm, UpdateProfile
 
 
 def product_list(request, category_slug=None):
@@ -69,4 +72,41 @@ def profiledetailview(request):
     else:
         return redirect('login')
 
+
+def update_profile(request):
+    instance = Profile.objects.get(user=request.user)
+    args = {}
+    if request.method == 'POST':
+        form = UpdateProfile(request.POST, instance=instance)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            firstn = form.cleaned_data['first_name']
+            lastn = form.cleaned_data['last_name']
+            user = request.user
+            user.username = username
+            user.email = email
+            user.first_name = firstn
+            user.last_name = lastn
+            user.save()
+            form.save()
+            return HttpResponseRedirect("/profile")
+    else:
+        form = UpdateProfile()
+
+    args['form'] = form
+    return render(request, 'registration/update_profile.html', args)
+
+
+def delete_profile(request):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    profile.delete()
+    user.delete()
+    return redirect('/')
+
+
+class ConfirmDelete(View):
+    def get(self, request, *args, **kwargs):
+        return render(request,'registration/confirm_delete.html')
 

@@ -23,3 +23,17 @@ class ProfileForm(UserCreationForm):
     class Meta:
         model = Profile
         fields = ('address', 'phone')
+
+
+class UpdateProfile(forms.ModelForm):
+    username = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    address = forms.CharField(max_length=254)
+    phone = forms.CharField(max_length=10)
+
+    class Meta:
+        model = Profile
+        fields = ('username', 'first_name', 'last_name', 'email',  'address', 'phone')
+

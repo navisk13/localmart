@@ -1,0 +1,24 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}
+    Delete Account
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row" style="margin-top: 6%">
+            <div class="col-md-4" style="text-align: center; margin-left: 365px">
+                <div class="page-header" style="font-size: large">
+                    Are you sure you want to delete your account?
+                </div>
+                <a href="{% url 'shop:confirm_delete_profile' %}"><button type="submit" class="btn btn-primary">Yes, I'm Sure</button></a>
+                <a href="{% url 'shop:profile' %}"><button type="submit" class="btn btn-danger">No, get me out of here!</button></a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+
+
