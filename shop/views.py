@@ -94,7 +94,14 @@ def update_profile(request):
     else:
         form = UpdateProfile()
 
+    user = request.user
     args['form'] = form
+    args['form'].fields['username'].initial = user.username
+    args['form'].fields['first_name'].initial = user.first_name
+    args['form'].fields['last_name'].initial = user.last_name
+    args['form'].fields['email'].initial = user.email
+    args['form'].fields['address'].initial = user.profile.address
+    args['form'].fields['phone'].initial = user.profile.phone
     return render(request, 'registration/update_profile.html', args)
 
 
