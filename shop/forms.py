@@ -11,6 +11,11 @@ class SignUpForm(UserCreationForm):
     address = forms.CharField(max_length=254, help_text='Enter your address')
     phone = forms.CharField(max_length=10, help_text='Enter Phone No')
 
+    def __init__(self, *args, **kwargs):
+        super(SignUpForm, self).__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({'class': 'form-control'})
+
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'address', 'phone', 'password1', 'password2')
@@ -33,7 +38,13 @@ class UpdateProfile(forms.ModelForm):
     address = forms.CharField(max_length=254)
     phone = forms.CharField(max_length=10)
 
+    def __init__(self, *args, **kwargs):
+        super(UpdateProfile, self).__init__(*args, **kwargs)
+        for field in iter(self.fields):
+            self.fields[field].widget.attrs.update({'class': 'form-control'})
+
     class Meta:
         model = Profile
         fields = ('username', 'first_name', 'last_name', 'email',  'address', 'phone')
+
 
